@@ -200,11 +200,19 @@ def get_indicators():
 # PRINT INDICATORS
 # =====================================================
 
-def print_indicators(data):
+def indicators_to_string(
+    data,
+    show_cdi=True,
+    show_selic=True,
+    show_ipca_12m=True,
+    show_focus=True,
+    show_errors=True,
+    show_consultation=True
+):
 
     rows = []
 
-    if data.get("cdi"):
+    if show_cdi and data.get("cdi"):
         rows.append({
             "Indicator": "CDI",
             "Reference": "Annualized",
@@ -212,7 +220,7 @@ def print_indicators(data):
             "Date": data["cdi"]["date"]
         })
 
-    if data.get("selic"):
+    if show_selic and data.get("selic"):
         rows.append({
             "Indicator": "Selic",
             "Reference": "Target rate",
@@ -220,7 +228,7 @@ def print_indicators(data):
             "Date": data["selic"]["date"]
         })
 
-    if data.get("ipca_12m"):
+    if show_ipca_12m and data.get("ipca_12m"):
         rows.append({
             "Indicator": "IPCA",
             "Reference": "12 months",
@@ -228,18 +236,18 @@ def print_indicators(data):
             "Date": data["ipca_12m"]["date"]
         })
 
-    for item in data.get("focus", []):
-        rows.append({
-            "Indicator": "Focus IPCA",
-            "Reference": str(item["year"]),
-            "Value": item["value"],
-            "Date": item["date"]
-        })
+    if show_focus:
+        for item in data.get("focus", []):
+            rows.append({
+                "Indicator": "Focus IPCA",
+                "Reference": str(item["year"]),
+                "Value": item["value"],
+                "Date": item["date"]
+            })
 
     df = pd.DataFrame(rows)
 
-    print("ECONOMIC INDICATORS")
-    print("=" * 40)
+    output = []
 
     if not df.empty:
 
@@ -253,18 +261,37 @@ def print_indicators(data):
             errors="coerce"
         ).dt.strftime("%d/%m/%Y")
 
-        print(df.to_string(index=False))
+        table = df.to_string(index=False, header=True)
+
+        header, body = table.split("\n", 1)
+
+        separator = "-" * len(header)
+
+        output.append(
+            header + "\n" +
+            separator + "\n" +
+            body
+        )
+
 
     else:
-        print("No indicators available.")
+        output.append("No indicators available.")
 
-    if data.get("errors"):
-        print("\nCOLLECTION ERRORS:")
+    if show_errors and data.get("errors"):
+        output.append("\nCOLLECTION ERRORS:")
 
         for error in data["errors"]:
-            print("-", error)
+            output.append(f"- {error}")
 
-    print("\nConsultation:", data["consultation"])
+    if show_consultation:
+        output.append(
+            f"\nConsultation: {data['consultation']}"
+        )
+
+    return "\n".join(output)
+    
+def print_indicators(data, **kwargs):
+    print(indicators_to_string(data, **kwargs))
 
 
 # =====================================================
@@ -274,12 +301,15 @@ def print_indicators(data):
 def main():
     indicators = get_indicators()
 
-    with open("indicators.json", "w", encoding="utf-8") as file:
-        json.dump(indicators, file, ensure_ascii=False, indent=4 )
+    #with open("indicators.json", "w", encoding="utf-8") as file:
+    #    json.dump(indicators, file, ensure_ascii=False, indent=4 )
 
+    #print("ECONOMIC INDICATORS")
+    #print("=" * 40)
+    
     print_indicators(indicators)
 
-    print("JSON updated: indicators.json")
+    #print("JSON updated: indicators.json")
 
 
 if __name__ == "__main__":

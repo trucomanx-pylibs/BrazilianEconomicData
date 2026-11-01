@@ -1,2 +1,5 @@
 /src/brazilian_economic_data/modules/__pycache__/
 /src/brazilian_economic_data/__pycache__/
+/src/brazilian_economic_data.egg-info
+/src/dist/brazilian_economic_data-*.tar.gz
+/src/dist/

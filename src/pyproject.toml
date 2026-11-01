@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "brazilian_economic_data"
-version = "0.1.0"
+version = "0.1.1"
 description = "A Python package for accessing Brazilian economic indicators and government bond market data through public APIs and official data sources."
 readme = "README.md"
 authors = [{name = "Fernando Pujaico Rivera", email = "fernando.pujaico.rivera@gmail.com"}]

@@ -1,6 +1,6 @@
 # about.py
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 __package__ = "brazilian_economic_data"
 __program_name__ = "brazilian-economic-data-info"
 __author__ = "Fernando Pujaico Rivera"

@@ -178,60 +178,130 @@ def get_treasury_bonds(min_years, max_years):
     return result
 
 
-def print_treasury_bonds(data):
+
+def treasury_bonds_to_string(
+    data,
+    show_maturity=True,
+    show_reference_date=True,
+    show_buy_rate=True,
+    show_sell_rate=True,
+    show_buy_price=True,
+    show_sell_price=True,
+    show_base_price=True,
+    show_consultation=True,
+    show_quotation_period=True,
+    show_source=True
+):
+
     bonds = data.get("bonds", [])
 
     if not bonds:
-        print("No Treasury bonds found for the selected maturity range.")
-        return
+        return "No Treasury bonds found for the selected maturity range."
 
     df = pd.DataFrame(bonds)
 
-    df = df.rename(columns={
-        "name": "Title",
-        "maturity": "Maturity",
-        "reference_date": "Reference Date",
-        "buy_rate": "Buy Rate (%)",
-        "sell_rate": "Sell Rate (%)",
-        "buy_price": "Buy Price (R$)",
-        "sell_price": "Sell Price (R$)",
-        "base_price": "Base Price (R$)"
-    })
+    columns = {
+        "name": ("Title", True),
+        "maturity": ("Maturity", show_maturity),
+        "reference_date": ("Reference Date", show_reference_date),
+        "buy_rate": ("Buy Rate (%)", show_buy_rate),
+        "sell_rate": ("Sell Rate (%)", show_sell_rate),
+        "buy_price": ("Buy Price (R$)", show_buy_price),
+        "sell_price": ("Sell Price (R$)", show_sell_price),
+        "base_price": ("Base Price (R$)", show_base_price)
+    }
 
-    print("\nTREASURY BONDS")
-    print("=" * 100)
+    selected_columns = [
+        column
+        for column, (_, enabled) in columns.items()
+        if enabled
+    ]
 
-    print(
-        df.to_string(
-            index=False,
-            formatters={
-                "Buy Rate (%)": lambda value: f"{value:.2f}%",
-                "Sell Rate (%)": lambda value: (
-                    f"{value:.2f}%" if pd.notna(value) else "-"
-                ),
-                "Buy Price (R$)": lambda value: (
-                    f"R$ {value:,.2f}" if pd.notna(value) else "-"
-                ),
-                "Sell Price (R$)": lambda value: (
-                    f"R$ {value:,.2f}" if pd.notna(value) else "-"
-                ),
-                "Base Price (R$)": lambda value: (
-                    f"R$ {value:,.2f}" if pd.notna(value) else "-"
-                )
-            }
-        )
+    df = df[selected_columns].rename(
+        columns={
+            column: label
+            for column, (label, _) in columns.items()
+        }
     )
 
-    print("\nConsultation:", data["consultation"])
-    print("Quotation period:", data["quotation_period"])
-    print("Source: Tesouro Transparente")
+    formatters = {
+        "Buy Rate (%)": lambda value: f"{value:.2f}%",
+        "Sell Rate (%)": lambda value: (
+            f"{value:.2f}%" if pd.notna(value) else "-"
+        ),
+        "Buy Price (R$)": lambda value: (
+            f"R$ {value:,.2f}" if pd.notna(value) else "-"
+        ),
+        "Sell Price (R$)": lambda value: (
+            f"R$ {value:,.2f}" if pd.notna(value) else "-"
+        ),
+        "Base Price (R$)": lambda value: (
+            f"R$ {value:,.2f}" if pd.notna(value) else "-"
+        )
+    }
+
+    active_formatters = {
+        column: formatter
+        for column, formatter in formatters.items()
+        if column in df.columns
+    }
+
+    table = df.to_string(
+        index=False,
+        formatters=active_formatters
+    )
+
+    header, body = table.split("\n", 1)
+
+    separator = "-" * len(header)
+
+    output = [
+        header,
+        separator,
+        body
+    ]
+
+    if show_consultation:
+        output.append(
+            f"\nConsultation: {data['consultation']}"
+        )
+
+    if show_quotation_period:
+        output.append(
+            f"Quotation period: {data['quotation_period']}"
+        )
+
+    if show_source:
+        output.append(
+            f"Source: {data['source']}"
+        )
+
+    return "\n".join(output)
+
+
+def print_treasury_bonds(data, **kwargs):
+    print(treasury_bonds_to_string(data, **kwargs))
+
 
 
 def main():
     bonds = get_treasury_bonds(4, 8)
 
-    print_treasury_bonds(bonds)
+    print_treasury_bonds(
+        bonds,
+        show_maturity=True,
+        show_reference_date=False,
+        show_buy_rate=True,
+        show_sell_rate=False,
+        show_buy_price=True,
+        show_sell_price=False,
+        show_base_price=False,
+        show_consultation=False,
+        show_quotation_period=False,
+        show_source=False
+    )
 
+    '''
     with open(
         "treasury_bonds.json",
         "w",
@@ -245,7 +315,7 @@ def main():
         )
 
     print("\nJSON updated: treasury_bonds.json")
-
+    '''
 
 if __name__ == "__main__":
     main()
