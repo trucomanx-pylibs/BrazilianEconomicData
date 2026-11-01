@@ -43,9 +43,10 @@ classifiers = [
 ]
 license = "GPL-3.0-only WITH Classpath-Exception-2.0 OR BSD-3-Clause"
 license-files = ["LICENSE"]
-keywords = ["writing", "translate"]
+keywords = ["brazil", "economic"]
 dependencies = [
-    "pandas"
+    "pandas",
+    "requests"
 ]
 
 [project.urls]

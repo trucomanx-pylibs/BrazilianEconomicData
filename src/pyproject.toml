@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "brazilian_economic_data"
+version = "0.1.0"
+description = "A Python package for accessing Brazilian economic indicators and government bond market data through public APIs and official data sources."
+readme = "README.md"
+authors = [{name = "Fernando Pujaico Rivera", email = "fernando.pujaico.rivera@gmail.com"}]
+maintainers = [{name = "Fernando Pujaico Rivera", email = "fernando.pujaico.rivera@gmail.com"}]
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+license = "GPL-3.0-only WITH Classpath-Exception-2.0 OR BSD-3-Clause"
+license-files = ["LICENSE"]
+keywords = ["brazil", "economic"]
+dependencies = [
+    "pandas",
+    "requests"
+]
+
+[project.urls]
+"Bug Reports" = "https://github.com/trucomanx-pylibs/BrazilianEconomicData/issues"
+"Funding" = "https://trucomanx.github.io/en/funding.html"
+"Documentation" = "https://github.com/trucomanx-pylibs/BrazilianEconomicData/tree/main/doc"
+"Source" = "https://github.com/trucomanx-pylibs/BrazilianEconomicData"
+
+[project.scripts]
+"brazilian-economic-data-info" = "brazilian_economic_data.program:main"
+
+[tool.setuptools]
+packages = ["brazilian_economic_data", "brazilian_economic_data.modules"]
+
+[tool.setuptools.package-data]
+"brazilian_economic_data" = ["data/logo.png", "data/logo.svg"]
